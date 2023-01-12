@@ -1,0 +1,60 @@
+
+
+/* Coped help code out of a diatheke.cpp file */
+
+void printsyntax() { 
+	//if we got this far without exiting, something went wrong, so print syntax
+	fprintf (stderr, "Diatheke command-line SWORD frontend Version 4.8 (SWORD: %s)\n", SWVersion::currentVersion.getText());
+	fprintf (stderr, "Copyright 1999-2018 by the CrossWire Bible Society\n");
+	fprintf (stderr, "http://www.crosswire.org/sword/diatheke/\n");
+	fprintf (stderr, "\n");
+	fprintf (stderr, "usage:  diatheke <-b module_name> [-s search_type] [-r search_range]\n");
+	fprintf (stderr, "    [-o option_filters] [-m maximum_verses] [-f output_format]\n");
+	fprintf (stderr, "    [-e output_encoding] [-v variant#(-1=all|0|1)]\n");
+	fprintf (stderr, "    [-l locale] <-k query_key>\n");
+	fprintf (stderr, "\n");
+	fprintf (stderr, "If <book> is \"system\" you may use these system keys: \"modulelist\",\n");
+	fprintf (stderr, "\"modulelistnames\", \"bibliography\", and \"localelist\".");
+	fprintf (stderr, "\n");
+	fprintf (stderr, "Valid search_type values are: phrase , regex, multiword, attribute,\n");
+	fprintf (stderr, "  lucene, multilemma.\n");
+	fprintf (stderr, "Valid (output) option_filters values are: n (Strong's numbers),\n");
+	fprintf (stderr, "  f (Footnotes), m (Morphology), h (Section Headings),\n");
+	fprintf (stderr, "  c (Cantillation), v (Hebrew Vowels), a (Greek Accents), p (Arabic Vowels)\n");
+	fprintf (stderr, "  l (Lemmas), s (Scripture Crossrefs), r (Arabic Shaping),\n");
+	fprintf (stderr, "  b (Bi-Directional Reordering), w (Red Words of Christ),\n");
+	fprintf (stderr, "  g (Glosses/Ruby), e (Word Enumerations), i (Intros)\n");
+	fprintf (stderr, "  x (Encoded Transliterations), t (Algorithmic Transliterations via ICU),\n");
+	fprintf (stderr, "  M (morpheme segmentation)\n");
+
+	fprintf (stderr, "Maximum verses may be any integer value\n");
+	fprintf (stderr, "Valid output_format values are: CGI, GBF, HTML, HTMLHREF, LaTeX, OSIS, RTF,\n");
+ 	fprintf (stderr, "  ThML, WEBIF, XHTML, plain, and internal (def)\n");
+ 	fprintf (stderr, "The option LaTeX will produce a compilable document, but may well require\n");
+	fprintf (stderr, "  tweaking to be usable.\n");
+	fprintf (stderr, "Valid output_encoding values are: Latin1, UTF8 (def), UTF16, HTML, RTF, and SCSU\n");
+	fprintf (stderr, "Valid locale values depend on installed locales. en is default.\n");
+	fprintf (stderr, "The query_key must be the last argument because all following\n");
+	fprintf (stderr, "  arguments are added to the key.\n");
+	fprintf (stderr, "\n");
+	fprintf (stderr, "Example usage:\n");
+	fprintf (stderr, "  diatheke -b KJV -o fmnx -k Jn 3:16\n");
+	fprintf (stderr, "  diatheke -b WHNU -t Latin -o mn -k Mt 24\n");
+	fprintf (stderr, "  diatheke -b KJV -s phrase -r Mt -k love\n");
+
+	exit(EXIT_FAILURE);
+}
+
+
+
+/*
+Boilerplate code removed out of diatheke.swift
+@main
+public struct cat {
+    public private(set) var text = "Hello, World!"
+
+    public static func main() {
+        print(cat().text)
+    }
+}
+*/

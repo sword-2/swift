@@ -25,7 +25,7 @@ let package = Package(
             //.executableTarget(name: "diatheke", dependencies: [
             //other dependencies
             .product(name: "ArgumentParser", package: "swift-argument-parser"),],
-            exclude: ["notes"]
+            exclude: ["notes", "g1.swift", "g2.swift" ]
             ),
         //.target(
         //    name: "argParse",

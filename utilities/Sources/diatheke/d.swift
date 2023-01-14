@@ -6,29 +6,13 @@
 
 import ArgumentParser
 
-/* This is not a functioning class, it is just to test which files swift-docc reports for. */
-public class dummyClass1 {
-    public var text = "Hello, World!"
-    private var xValue = 12
-
-    public init() { //like a C++ constructor
-        xValue = 10
-    }
-}
-
-
-public struct SomeStructure {
-    public var text2 = "Hello, World!"
-}
-
-public var text3 = "Hello, World!"
 
 /// Prepare to process input arguments
 /// - Parameters:
 ///   - book: like a SWORD module
 ///   - key: like a verse reference
 /// - Returns: something from a module or else help from swift argument parser
-struct cli: ParsableCommand {
+public struct cli: ParsableCommand {
     //class cli: ParsableCommand { //get an error on build if struct changed to class
     
     @Argument(help: "book/SWORD module. If the value is system you may use these system keys: modulelist modulelistnames bibliography and localelist")
@@ -62,7 +46,11 @@ struct cli: ParsableCommand {
     @Option(help: "locale. Valid locale values depend on installed locales. en is default.")
     var locale: String
 
-    mutating func run() throws {
+
+    public init() { //try to prevent an error during build
+    }
+
+    public mutating func run() throws {
         print("Example usage")
         print("  diatheke -b KJV -o fmnx -k Jn 3:16");
         print("  diatheke -b WHNU -t Latin -o mn -k Mt 24");
@@ -81,6 +69,7 @@ struct cli: ParsableCommand {
 */
     }
 }
+
 /* original boilerplate code
 public struct argParse {
     public private(set) var text = "Hello, World!"
@@ -92,3 +81,22 @@ public struct argParse {
 
 
 
+/* This is not a functioning class, it is just to test which files swift-docc reports for. */
+/*
+public class dummyClass1 {
+    public var text = "Hello, World!"
+    private var xValue = 12
+
+    public init() { //like a C++ constructor
+        xValue = 10
+    }
+}
+*/
+
+/*
+public struct SomeStructure {
+    public var text2 = "Hello, World!"
+}
+
+public var text3 = "Hello, World!"
+*/

@@ -1,20 +1,15 @@
-//A beginning to learn how to parse input arguments. Maybe it will eventualy do something like GNU autogen?
-//===---------------------------------------------------------
-// Adapted from the Swift Argument Parser open source project (https://swift.org/LICENSE.txt)
-//===--------------------------------------------------------
-
-
 import ArgumentParser
 
 
-/// Prepare to process input arguments
+/// Figuring out how to parse input arguments.
 /// - Parameters:
 ///   - book: like a SWORD module
 ///   - key: like a verse reference
-/// - Returns: something from a module or else help from swift argument parser
+/// - Returns: unsur, but upon detecting an error, a help message is printed
+/// > Note: GNU autogen also did something similar for C/C++
+/// > Warning: a build error occurred after trying to change struct to class
 public struct cli: ParsableCommand {
-    //class cli: ParsableCommand { //get an error on build if struct changed to class
-    
+
     @Argument(help: "book/SWORD module. If the value is system you may use these system keys: modulelist modulelistnames bibliography and localelist")
     var book: String
 
@@ -77,26 +72,4 @@ public struct argParse {
     public init() {
     }
 }
-*/
-
-
-
-/* This is not a functioning class, it is just to test which files swift-docc reports for. */
-/*
-public class dummyClass1 {
-    public var text = "Hello, World!"
-    private var xValue = 12
-
-    public init() { //like a C++ constructor
-        xValue = 10
-    }
-}
-*/
-
-/*
-public struct SomeStructure {
-    public var text2 = "Hello, World!"
-}
-
-public var text3 = "Hello, World!"
 */

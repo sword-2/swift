@@ -17,7 +17,7 @@ public class dummyClass1 {
 }
 
 
-struct SomeStructure {
+public struct SomeStructure {
     public var text2 = "Hello, World!"
 }
 
@@ -81,7 +81,6 @@ struct cli: ParsableCommand {
 */
     }
 }
-
 /* original boilerplate code
 public struct argParse {
     public private(set) var text = "Hello, World!"

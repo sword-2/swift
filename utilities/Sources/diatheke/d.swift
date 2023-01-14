@@ -18,8 +18,10 @@ public class dummyClass1 {
 
 
 struct SomeStructure {
-    public var text = "Hello, World!"
+    public var text2 = "Hello, World!"
 }
+
+public var text3 = "Hello, World!"
 
 /// Prepare to process input arguments
 /// - Parameters:
@@ -27,6 +29,7 @@ struct SomeStructure {
 ///   - key: like a verse reference
 /// - Returns: something from a module or else help from swift argument parser
 struct cli: ParsableCommand {
+    //class cli: ParsableCommand { //get an error on build if struct changed to class
     
     @Argument(help: "book/SWORD module. If the value is system you may use these system keys: modulelist modulelistnames bibliography and localelist")
     var book: String

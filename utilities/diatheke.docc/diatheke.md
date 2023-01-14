@@ -1,6 +1,6 @@
-# Diatheke (partial)
+# overview
 
-Test documentation for a piece of a utility
+Test documentation. Following is a hypothetical line of code:
 
 ```swift
 public var aTestVariable = "Hello, World!"

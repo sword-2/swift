@@ -17,6 +17,9 @@ public class dummyClass1 {
 }
 
 
+struct SomeStructure {
+    public var text = "Hello, World!"
+}
 
 /// Prepare to process input arguments
 /// - Parameters:

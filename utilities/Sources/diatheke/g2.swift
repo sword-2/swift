@@ -1,5 +1,5 @@
 /* This is not a functioning class, it is just to test which files swift-docc reports for. */
-public class g1 {
+public class g2 {
     public var texttwo = "Five"
     //public private(set) var text = "Hello, World!"
     public var text = "Hello, World!"

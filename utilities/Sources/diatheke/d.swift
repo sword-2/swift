@@ -6,12 +6,24 @@
 
 import ArgumentParser
 
+/* This is not a functioning class, it is just to test which files swift-docc reports for. */
+public class dummyClass1 {
+    public var text = "Hello, World!"
+    private var xValue = 12
+
+    public init() { //like a C++ constructor
+        xValue = 10
+    }
+}
+
+
+
 /// Prepare to process input arguments
 /// - Parameters:
 ///   - book: like a SWORD module
 ///   - key: like a verse reference
 /// - Returns: something from a module or else help from swift argument parser
-struct diatheke: ParsableCommand {
+struct cli: ParsableCommand {
     
     @Argument(help: "book/SWORD module. If the value is system you may use these system keys: modulelist modulelistnames bibliography and localelist")
     var book: String

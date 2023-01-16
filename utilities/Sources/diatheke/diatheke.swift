@@ -8,6 +8,7 @@ import ArgumentParser
 /// - Returns: unsur, but upon detecting an error, a help message is printed
 /// > Note: GNU autogen also did something similar for C/C++
 /// > Warning: a build error occurred after trying to change struct to class
+/// ``cli``
 public struct cli: ParsableCommand {
 
     @Argument(help: "book/SWORD module. If the value is system you may use these system keys: modulelist modulelistnames bibliography and localelist")

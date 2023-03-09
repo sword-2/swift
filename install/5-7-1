@@ -1,0 +1,83 @@
+#!/bin/sh
+
+
+space=' ' #used when concatenating positional arguments
+
+
+swift_install() {
+
+	#debugging ...
+	#printf '\ndash arguments included $1=%s and $2=%s' $1 $2
+
+	#partial check for expected user input - at least one argument to select a case
+	if [ $# -lt 1 ]; then #partial check on positional arguments
+		printf '\nless than 1 args received. Expected at least one:'
+		g_help; return 1
+	fi
+
+	case $1 in
+		"1") #update Linux / Ubuntu server
+			sudo apt update && sudo apt upgrade
+		;;
+		"dep") #Install dependencies per ref - ref: https://www.swift.org/getting-started/#on-linux
+			args=install #checks system
+			args=${args}${space}binutils #comment
+			args=${args}${space}git #comment
+			args=${args}${space}gnupg2 #comment
+			args=${args}${space}libc6-dev #comment
+			args=${args}${space}libcurl4 #comment
+			args=${args}${space}libedit2 #comment
+			args=${args}${space}libgcc-9-dev #comment
+			args=${args}${space}libpython2.7 #comment
+			args=${args}${space}libsqlite3-0 #comment
+			args=${args}${space}libstdc++-9-dev #comment
+			args=${args}${space}libxml2 #comment
+			args=${args}${space}libz3-dev #comment
+			args=${args}${space}pkg-config #comment
+			args=${args}${space}tzdata #comment
+			args=${args}${space}uuid-dev #comment
+			args=${args}${space}zlib1g-dev #comment
+			set -- $args #see if it gets needed file corbaidl_defs.hh
+			for arg in "$@"; do
+				#printf '\nplanning to process %s' "$i"
+				#apt-get remove $i
+				apt-get install "$arg"
+				wait $! #don't keep looping if one install seems to hang.
+			done
+			printf '\n'
+		;;
+		"warn") #repl had a lot of warnings about not finding zlib.
+			#A reference recommended installing libc6-dbg to stop the warnings
+			file=libc6-dbg
+			apt-get remove $file
+			;;
+		"basic") #some parts are commented out due to re-running in pieces. It download, extract main part of the swift
+			#Fr. web page https://www.swift.org/download
+			#Download tar, not non-tar. non-tar was observed to have a lot of mac stuff to build like another brew package manager
+			#url=https://github.com/apple/swift/archive/refs/tags/swift-5.7.1-RELEASE.zip
+			url2=https://download.swift.org/swift-5.7.1-release/ubuntu2004/swift-5.7.1-RELEASE/swift-5.7.1-RELEASE-ubuntu20.04.tar.gz
+			oDir=../../swift_
+			oFile=swift-5.7.1-ubuntu2004.tar.gz
+
+			#if [ -f ${oDir}/${oFile} ]; then \rm ${oDir}/${oFile}; fi
+
+			#curl -Lo ${oDir}/${oFile} "$url2" #-L to follow redirections
+
+			cd $oDir
+			gunzip ${oFile} #extract the .gz part
+			#printf '\nplanning to extract %s' ${oFile%.*}
+			tar -xf ${oFile%.*}  #extract the tar part (ignore extension .gz)
+			ls -al #verify what happened
+		;;
+		"path") #update the path in profile
+			#../../swift_/swift-5.7.1-RELEASE-ubuntu20.04/usr/bin
+		;;
+		*)
+			printf '\nunexpected argument in 2nd position. $2=%s' "$2"
+		;;
+	esac
+} #End swift_install
+
+
+
+swift_install "$@"; return 0

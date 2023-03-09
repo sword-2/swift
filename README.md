@@ -14,4 +14,6 @@ n/a
 
 ## Comments
 
-A [placeholder](https://sword-2.github.io/swift/documentation/diatheke) to load some content.
+The install folder just has a script used to install the swift development kit. The steps were already on the internet, but not necessarly in script form.
+
+learning to run swift-docc for this repo - [link](https://sword-2.github.io/swift/documentation/diatheke).

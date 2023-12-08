@@ -1,8 +1,0 @@
-Input: /home2/usr/local/bible/swift/utilities/Sources/diatheke/diatheke.docc
-Template: /home2/usr/local/swift_/swift-5.7.1-RELEASE-ubuntu20.04/usr/share/docc/render
-========================================
-Starting Local Preview Server
-	 Address: http://localhost:8000/documentation/diatheke
-========================================
-Stopping preview...
-Stopped preview server at localhost:8000

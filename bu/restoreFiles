@@ -1,0 +1,407 @@
+#!/bin/dash
+
+#It is for personal use due to confusing code and cryptic output.
+#
+#The script is like a recursive copy (cp -r) to backup one folder to another folder. But it has differences from cp -r. One is skipping folder contents that can be regenerated with a build or net download. These are folder names ending in underscore. A folder .build will be omitted since the swift package manager can regenerate it. More reasons for some complexity compared to cp -r. 
+	#1. Some uncertainty in using Gnu find resulted in lists of files and folders in different varibles. Variable exist for normal names, dot names, names ending in underscore, etc. 
+	#2. Using shell
+
+
+
+
+#global variables.
+	logFile=errsOut
+	dirCount=0
+	#variables to increase or decrease debugging info
+	debug1='false' #true prints counts of how many files and directories were found for a folder.
+	debug2='false' #true prints out names/paths of files and directories found in one folder.
+
+
+main() {
+
+    printf '\n0 main function running' > $logFile 2>&1
+
+	#a test to see how it works
+		#oneFolder '/usr/local/bu/sh' '/mnt/bu/wsl2/sh' > $logFile 2>&1
+		##count files in to and from to see if they are the same
+
+
+	#etc - folder
+		#from=/etc
+		#to=/mnt/bu/wsl2/etc
+		#etc $from $to
+		#diff -qr '/etc' '/mnt/bu/wsl2/etc' #compare the 2 directories
+
+	#root
+		from=/root
+		to=/mnt/bu/wsl2/root
+		root "$from" "$to"
+		diff -qr '/root' '/mnt/bu/wsl2/root' #compare the 2 directories
+
+	#home: laptop to usb:
+		#dusr=$(find /home/greg/ -type d -print)
+		#dusrcount=$(printf '%s' "$dusr" | wc -l); printf '\ntotal dirs=%s' "$dusrcount, counting them ...\n"
+		#oneFolder '/home/greg' '/mnt/bu/wsl2/home/greg' #> $logFile 2>&1
+
+		#diff -qr '/home/greg' '/mnt/bu/wsl2/home/greg' #compare the 2 directories
+
+
+	#lib
+		#skipped copying Ubuntu stuff to WSL2	
+		#
+	
+	#usr: laptop to usb:
+		#dusr=$(find /usr/local/ -type d -print)
+		#dusrcount=$(printf '%s' "$dusr" | wc -l); printf '\ntotal dirs=%s' "$dusrcount, counting them ...\n"
+		#oneFolder '/usr/local' '/mnt/bu/wsl2/usr/local' #> $logFile 2>&1
+
+		#diff -qr '/usr/local' '/mnt/bu/wsl2/usr/local' #compare the 2 directories
+
+	exit 0
+} #end main
+
+
+#count folders/files to help verify a backup moved the expected quanity
+
+#This is a recursive function ...
+oneFolder() { #send in argument (path) for a directory that is added to pfx.
+	local files='' #normal files 
+	local dotfiles='' #dot files 
+	local files_='' #files ending with _
+	local dotfiles_='' #dot files ending with _
+	local dirs='' #normal dirs
+	local dotdirs='' #dot dirs
+	local dirs_='' #dirs ending with _
+	local dotdirs_='' #dot dirs ending with _
+
+	local fcount='' #count of files
+	local dotfcount='' #count of dot files
+	local fcount_='' #count of files_
+	local dotfcount_='' #count of dot files_
+	local dcount='' #count of dirs
+	local dotdcount='' #count of dot dirs
+	local dcount_='' #count of dirs_
+	local dotdcount_='' #count of dot dirs_
+
+	dirCount=$((dirCount+1)); printf ',%s' $dirCount
+	#dirs more important since copying planned by them to skip dirs ending in _
+
+	#$1=from, $2=to
+	#printf '\ncountGnuFind started, input arg $1=%s, $2=%s' "$1" "$2"
+	local from="${1}"
+	local to="${2}"
+
+	#printf '\n\tfrom=%s, pfixFrom=%s, to=%s, pfixTo=%s' "$from" "${pfixFrom}" "$to" "$pfixTo"
+	
+
+	#error checks that top level directory names exist for $from and $to
+		if [ ! -d "$from" ]; then
+			printf '\n\tno directory found for from=%s, have to make it' "$from"
+			mkdir -p "$from"
+		fi
+
+		if [ ! -d "$to" ]; then
+			printf '\n\tno directory found for to=%s, have to make it' "$to"
+			mkdir -p "$to"
+		fi
+		
+	#extra variables to separate files/dirs with normal names, dot prefix, _ suffix.
+	#-print argument supposed to use newline as a delimiter, print0 null char \0
+	#symlinks includes with files
+	dirs=$(find "$from"/ -mindepth 1 -maxdepth 1 -type d ! -name "*_" ! -name ".*" -print)
+	dotdirs=$(find "$from"/ -mindepth 1 -maxdepth 1 -type d -name ".*"  ! -name "*_" -print)
+
+	dirs_=$(find "$from"/ -mindepth 1 -maxdepth 1 -type d -name "*_" ! -name ".*" -print)
+	dotdirs_=$(find "$from"/ -mindepth 1 -maxdepth 1 -type d -name ".*_" ! -name "*_" -print)
+
+	files=$(find "$from"/ -mindepth 1 -maxdepth 1 -type f ! -name "*_" ! -name ".*" -print)
+	dotfiles=$(find "$from"/ -mindepth 1 -maxdepth 1 -type f -name ".*" ! -name "*_" -print)
+
+	files_=$(find "$from"/ -mindepth 1 -maxdepth 1 -type f -name "*_" ! -name ".*" -print)
+	dotfiles_=$(find "$from"/ -mindepth 1 -maxdepth 1 -type f -name ".*_" ! -name "*_" -print)
+
+	symlinks=$(find "$from"/ -mindepth 1 -maxdepth 1 -type l -print)
+
+
+
+	#make IFS newline for the for loops later. Never found a one liner that worked even with command substitution and printf/echo.
+	IFS="
+"
+	#printf '\ndebugging IFS=%s.' "$IFS"
+	
+	if [ $debug1 = "true" ]; then #prints counts of what was found.
+	#printf '\ndebugging some counts, may not be complete due to variability in find command'
+		dcount=$(printf '%s' "$dirs" | wc -l)
+		if [ "$dcount" -ne 0 ]; then
+			#printf '\n\tdebugging: dcount -eq 0'
+			dcount=$((dcount + 1)) #add 1 since the count was a newline count
+		fi
+		dotdcount=$(printf '%s' "$dotdirs" | wc -l)
+		if [ "$dotdcount" -ne 0 ]; then
+			#printf '\n\tdebugging: dotdcount -eq 0'
+			dotdcount=$((dotdcount + 1)) #add 1 since the count was a newline count
+		fi
+
+		dcount_=$(printf '%s' "$dirs_" | wc -l)
+		if [ "$dcount_" -ne 0 ]; then
+			#printf '\n\tdebugging: dcount_ -eq 0'
+			dcount_=$((dcount_ + 1)) #add 1 since the count was a newline count
+		fi
+		dotdcount_=$(printf '%s' "$dotdirs_" | wc -l)
+		if [ "$dotdcount_" -ne 0 ]; then
+			#printf '\n\tdebugging: dotdcount_ -eq 0'
+			dotdcount_=$((dotdcount_ + 1)) #add 1 since the count was a newline count
+		fi
+	
+		fcount=$(printf '%s' "$files" | wc -l)
+		if [ "$fcount" -ne 0 ]; then
+			#printf '\n\tdebugging: fcount -eq 0'
+			fcount=$((fcount + 1)) #add 1 since the count was a newline count
+		fi
+		dotfcount=$(printf '%s' "$dotfiles" | wc -l)
+		if [ "$dotfcount" -ne 0 ]; then
+			#printf '\n\tdebugging: dotfcount -eq 0'
+			dotfcount=$((dotfcount + 1)) #add 1 since the count was a newline count
+		fi
+	
+		fcount_=$(printf '%s' "$files_" | wc -l)
+		if [ "$fcount_" -ne 0 ]; then
+			#printf '\n\tdebugging: fcount_ -eq 0'
+			fcount_=$((fcount_ + 1)) #add 1 since the count was a newline count
+		fi
+
+		dotfcount_=$(printf '%s' "$dotfiles_" | wc -l)
+		if [ "$dotfcount_" -ne 0 ]; then
+			#printf '\n\tdebugging: dotfcount_ -eq 0'
+			dotfcount_=$((dotfcount_ + 1)) #add 1 since the count was a newline count
+		fi
+		
+		scount=$(printf '%s' "$symlinks" | wc -l)
+		if [ "$scount" -ne 0 ]; then
+			#printf '\n\tdebugging: scount -eq 0'
+			scount=$((scount + 1)) #add 1 since the count was a newline count
+		fi
+
+
+
+		printf '\nprintf debug1: %s counts:' $1
+		printf '\n\tdirs=%s, dotdirs=%s, dirs_=%s, dotdirs_=%s\n' $dcount $dotdcount $dcount_ $dotdcount_
+		printf '\n\tfiles=%s, dotfiles=%s, files_=%s, dotfiles_=%s\n' $fcount $dotfcount $fcount_ $dotfcount_ 
+		printf '\n\tsymlinks=%s\n' $scount
+	fi
+
+	if [ $debug2 = "true" ]; then
+		printf '\ndebug2 printing out contents of files and dirs ...'
+
+
+		printf '\n\tfiles/symlinks ...'
+		for i in $files; do
+			printf '\n\t\t%s' "$i"
+   		done
+
+		printf '\n\tdotfiles/dotsymlinks ...'
+		for i in $dotfiles; do
+			printf '\n\t\t%s' "$i"
+   		done
+
+
+		printf '\n\tfiles_/symlinks_ ...'
+		for i in $files_; do
+			printf '\n\t\t%s' "$i"
+   		done
+
+
+		printf '\n\tdotfiles_/dotsymlinks_ ...'
+		for i in $dotfiles_; do
+			printf '\n\t\t%s' "$i"
+   		done
+
+
+		printf '\n\tdirs ...'
+		for i in $dirs; do
+			printf '\n\t\t%s' "$i"
+   		done
+
+
+		printf '\n\tdotdirs ...'
+		for i in $dotdirs; do
+			printf '\n\t\t%s' "$i"
+   		done
+
+		printf '\n\tdirs_ ...'
+		for i in $dirs_; do
+			printf '\n\t\t%s' "$i"
+   		done
+
+
+		printf '\n\tdotdirs_ ...'
+		for i in $dotdirs_; do
+			printf '\n\t\t%s' "$i"
+   		done
+
+
+		printf '\n\tsymlinks ...'
+		for s in $symlinks; do
+			printf '\n\t\t%s' "$s"
+   		done
+	fi
+
+
+	#copy all files at current level
+		for f in $files; do
+			#printf '\n\ttop file f=%s to=%s' "$f" "$to"
+			sudo cp -u "$f" "$to"
+		done 
+		
+		for f in $dotfiles; do
+			#printf '\n\ttop file f=%s to=%s' "$f" "$to"
+			sudo cp -u "$f" "$to"
+		done
+		
+		for f in $files_; do
+			#printf '\n\ttop file f=%s to=%s' "$f" "$to"
+			sudo cp -u "$f" "$to"
+		done
+
+		for f in $dotfiles_; do
+			#printf '\n\ttop file f=%s to=%s' "$f" "$to"
+			sudo cp -u "$f" "$to"
+		done
+
+	#symlinks
+		for s in $symlinks; do
+			suffixSym="${s##$from}"
+			destSym="${to}${suffixSym}"
+			#printf '\n\ttrying to copy symlink s=%s to=%s' "$s" "${destSym}"
+			sudo cp -s -d "$s" "${destSym}" #extra flag -d needed for it to work
+		done
+
+
+	#check directories and do recursvie calls
+	for i in $dirs; do
+		comSuffix="${i##$from}" #remove prefix on from for common suffix
+		newFrom="${from}${comSuffix}"
+		newTo="${to}${comSuffix}"
+		if [ ! -d "${newTo}" ]; then
+			#printf '\n\tmaking directory=%s since it did not exist' "$newTo"
+			sudo mkdir -p "$newTo"
+		#else
+			#printf '\n\tnot making directory newTo=%s since it already exists' "$newTo"
+		fi
+		#oneFolder "$newFrom" "$newFrompfix" "$newTo" "$newTopfix" #recursive call
+		oneFolder "$newFrom" "$newTo" #recursive call
+   	done
+
+	for i in $dirs_; do
+		comSuffix="${i##$from}" #remove prefix on from for common suffix
+		newFrom="${from}${comSuffix}"
+		newTo="${to}${comSuffix}"
+		if [ ! -d "${newTo}" ]; then
+			#printf '\n\tmaking directory=%s since it did not exist' "$newTo"
+			sudo mkdir -p "$newTo"
+		#else
+			#printf '\n\tnot making directory newTo=%s since it already exists' "$newTo"
+		fi
+		#DO NOT DO RECURSIVE CALL for *_
+   	done
+
+
+	for i in $dotdirs; do
+		comSuffix="${i##$from}" #remove prefix on from for common suffix
+		newFrom="${from}${comSuffix}"
+		newTo="${to}${comSuffix}"
+		if [ ! -d "${newTo}" ]; then
+			#printf '\n\tmaking directory=%s since it did not exist' "$newTo"
+			sudo mkdir -p "$newTo"
+		#else
+			#printf '\n\tnot making directory newTo=%s since it already exists' "$newTo"
+		fi
+		#oneFolder "$newFrom" "$newFrompfix" "$newTo" "$newTopfix" #recursive call
+		oneFolder "$newFrom" "$newTo" #recursive call
+   	done
+
+
+	for i in $dotdirs_; do
+		comSuffix="${i##$from}" #remove prefix on from for common suffix
+		newFrom="${from}${comSuffix}"
+		newTo="${to}${comSuffix}"
+		if [ ! -d "${newTo}" ]; then
+			#printf '\n\tmaking directory=%s since it did not exist' "$newTo"
+			sudo mkdir -p "$newTo"
+		#else
+			#printf '\n\tnot making directory newTo=%s since it already exists' "$newTo"
+		fi
+		#DO NOT DO RECURSIVE CALL for *_
+   	done
+
+}
+
+etc() { #copy selected contents pertaining to etc folder
+	from="$1"
+	to="$2"
+
+		if [ ! -d "$from" ]; then
+			printf '\n\tno directory found for from=%s, exiting early' "$from"
+			exit 1
+		fi
+
+		if [ ! -d "$to" ]; then
+			printf '\n\tno directory found for to=%s, have to make it' "$to"
+			mkdir -p "$to"
+		fi
+	#'/etc/apt/sources.list'
+	#'/etc/default/crda'
+	#'/etc/default/hostapd'
+	#'/etc/default/grub'
+	#'/etc/dhcp/dhclient.conf'
+	#'/etc/dhcp/dhcpd.conf'
+	#'/etc/dnsmasq.conf'
+	#'/etc/hostapd/hostapd.conf'
+	cp -u "${from}"/fstab "${to}"/fstab #'/etc/fstab'
+	#'/etc/initramfs-tools/hooks/edid' #deactivated after not doing edid for a year or more
+	cp -u "${from}"/logrotate.conf "${to}"/logrotate.conf #'/etc/logrotate.conf'
+	#'/etc/manpath.config'
+	#'/etc/modprobe.d/alsa-base.conf' #it once helped the speaker run
+	cp -u "${from}"/mplayer "${to}"/mplayer #'/etc/mplayer/mplayer.conf'
+	#'/etc/network/interfaces' #deactivated after switch to netplan
+	#'/etc/network/interfaces_server'
+
+	#'/etc/netplan/enet.yaml'
+	#'/etc/netplan/usb.yaml'
+	#'/etc/netplan/wifiAndroid.yaml'
+	#'/etc/netplan/wifiFCC.yaml'
+	#'/etc/netplan/wifiPANERA.yaml'
+	cp -u "${from}"/profile "${to}"/profile #'/etc/profile' #system wide profile for bourne shell
+
+	#deactivated - forgot the application for some of these after a long time
+		#'/etc/systemd/system/usb-mount@.service'
+		#'/etc/udev/rules.d/40-permissions.rules'
+		#'/etc/udev/rules.d/99-local.rules'
+  
+	#'/etc/vsftpd.conf' #local ftp server for SWORD module install to avoid cloud provider.
+
+	#'/etc/wpa_supplicant/wpa_supplicant.conf'
+}
+
+root() { #copy selected files from root.
+	from="$1"
+	to="$2"
+
+	cp -ur "$from" "$to"
+}
+
+
+
+check_usb() { #subroutine that may partly double check contents
+	du -sh /media/txfr #disk usage
+	df -B1 /media/txfr #amount of storage left
+}
+
+
+
+main "$@"; exit 0
+
+#Old code on hold:
+	#Possible additions, if they work:
+		#Backup /lib/firmware/edid
+

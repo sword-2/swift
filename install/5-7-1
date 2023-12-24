@@ -1,8 +1,12 @@
 #!/bin/sh
-
+#install swift SDK for those package managers that didn't enable install was not observed
 
 space=' ' #used when concatenating positional arguments
 
+pth1='/usr/local/bin'
+oDir=~/swift_
+	#The root login requirement may occur if saving files to /usr/local/swift_
+	#But also the PATH may not find the executables as easy if they are not in a standard bin/ folder
 
 swift_install() {
 
@@ -41,31 +45,40 @@ swift_install() {
 			for arg in "$@"; do
 				#printf '\nplanning to process %s' "$i"
 				#apt-get remove $i
-				apt-get install "$arg"
+				sudo apt-get install "$arg"
 				wait $! #don't keep looping if one install seems to hang.
 			done
 			printf '\n'
 		;;
-		"warn") #repl had a lot of warnings about not finding zlib.
-			#A reference recommended installing libc6-dbg to stop the warnings
+		"warn") #swift's repl command had a lot of warnings about not finding zlib.
+			#A reference recommended installing/removing libc6-dbg to stop the warnings
 			file=libc6-dbg
 			apt-get remove $file
 			;;
-		"basic") #some parts are commented out due to re-running in pieces. It download, extract main part of the swift
+		"basic0") #check if a file is present to work with
+			#ls -l ${oDir}
+			#printf '\n%s' ${oDir}
+			#The path to bin: /home/greg/swift_/swift-5.7.1-RELEASE-ubuntu20.04/usr/bin
+			vim ~/.profile #To ensure path includes the location of executables.
+			;;
+		"basic1") #some parts are commented out due to re-running in pieces. It download, extract main part of the swift
 			#Fr. web page https://www.swift.org/download
 			#Download tar, not non-tar. non-tar was observed to have a lot of mac stuff to build like another brew package manager
 			#url=https://github.com/apple/swift/archive/refs/tags/swift-5.7.1-RELEASE.zip
 			url2=https://download.swift.org/swift-5.7.1-release/ubuntu2004/swift-5.7.1-RELEASE/swift-5.7.1-RELEASE-ubuntu20.04.tar.gz
-			oDir=../../swift_
 			oFile=swift-5.7.1-ubuntu2004.tar.gz
 
-			#if [ -f ${oDir}/${oFile} ]; then \rm ${oDir}/${oFile}; fi
+			if [ ! -d ${oDir} ]; then mkdir ${oDir}; fi
+			if [ -f ${oDir}/${oFile} ]; then \rm ${oDir}/${oFile}; fi
 
-			#curl -Lo ${oDir}/${oFile} "$url2" #-L to follow redirections
-
+			curl -Lo ${oDir}/${oFile} "$url2" #-L to follow redirections
+			ls -l ${oDir}
+			;;
+		"basic2") #extract something already downloaded
 			cd $oDir
-			gunzip ${oFile} #extract the .gz part
-			#printf '\nplanning to extract %s' ${oFile%.*}
+			oFile=swift-5.7.1-ubuntu2004.tar.gz
+			gunzip ${oFile} #extract the .gz part. confusing error if oFile variable not set. It said gunzip: compressed data not read from a terminal.
+			printf '\nplanning to extract %s' ${oFile%.*}
 			tar -xf ${oFile%.*}  #extract the tar part (ignore extension .gz)
 			ls -al #verify what happened
 		;;
